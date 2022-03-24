@@ -127,9 +127,11 @@ class Donation(models.Model):
     entry_time = models.DateTimeField()
     exit_time = models.DateField()
 
-    # validate exams related to this donation. (implement later)
     def validate(self):
-        pass
+        for exam in self.exams_set.all():
+            if exam.state_exam != Exams.EXAM_VALID:
+                return False
+        return True
 
 
 class Tubes(models.Model):

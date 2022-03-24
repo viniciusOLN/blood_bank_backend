@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from cpf_field.models import CPFField
-
+import uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -109,18 +109,48 @@ class Allergies(models.Model):
     category = models.CharField(max_length=3, choices=ALLERGY_CATEGORIES)
     subject = models.CharField(max_length=30)
 
-
 class Donation(models.Model):
-    pass
+    date = models.DateField()
+    local = models.CharField(max_length=100)
+    real_weight = models.FloatField()
+    temperature = models.FloatField()
+    serial_number_collection_bag = models.ForeignKey('CollectionBags', on_delete=models.CASCADE, null=False)
+    test_tube = models.ForeignKey('Tubes', on_delete=models.CASCADE, null=False)
+    donator = models.ForeignKey(Donator, on_delete=models.CASCADE, null=False)
+    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE, null=False)
+    entry_time = models.DateTimeField()
+    exit_time = models.DateField()
 
-
+    #validate exams related to this donation. (implement later)
+    def validate(self):
+        pass
+   
 class Tubes(models.Model):
-    pass
-
+    num_tube = models.SlugField(max_length=100, unique=True)
+    
+    def save(self, *args, **kwargs):
+        self.num_tube = uuid.uuid4()
+        super().save(*args, **kwargs)
 
 class CollectionBags(models.Model):
-    pass
+    num_bag = models.SlugField(max_length=100, unique=True)
+    
+    def save(self, *args, **kwargs):
+        self.num_bag = uuid.uuid4()
+        super().save(*args, **kwargs)
 
+class Exams(models.Model):
+    EXAM_VALID = 'y'
+    EXAM_NOT_VALID = 'n'
+    EXAM_WAITING = 'w'    
 
-class Exames(models.Model):
-    pass
+    STATE_EXAM = [
+        (EXAM_VALID, 'exam valid'),
+        (EXAM_NOT_VALID, 'exam not valid'),
+        (EXAM_WAITING, 'waiting exam result'),
+    ]
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
+    donation = models.ForeignKey(Donation, on_delete=models.CASCADE, null=False)
+    state_exam = models.CharField(max_length=3, choices=STATE_EXAM)
+

@@ -112,7 +112,7 @@ class Allergies(models.Model):
 
 
 class Donation(models.Model):
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
     local = models.CharField(max_length=100)
     real_weight = models.FloatField()
     temperature = models.FloatField()
@@ -141,7 +141,7 @@ class Tubes(models.Model):
 
 
 class CollectionBags(models.Model):
-    num_bag = models.SlugField(max_length=100, unique=True)
+    num_bag = models.SlugField(max_length=100, unique=True, default='123')
 
     def save(self, *args, **kwargs):
         self.num_bag = uuid.uuid4()

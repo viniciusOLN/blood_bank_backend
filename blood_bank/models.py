@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=250)
     email = models.EmailField(max_length=250, unique=True)
     cpf = CPFField(max_length=11)
-    user_type = models.CharField(max_length=3, choices=USER_TYPES)
+    user_type = models.CharField(max_length=3, choices=USER_TYPES, default=DONATOR)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 

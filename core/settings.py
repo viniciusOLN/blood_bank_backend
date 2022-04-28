@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blood_bank.apps.BloodBankConfig',
+    'rest_framework',
     'cpf_field',
 ]
 

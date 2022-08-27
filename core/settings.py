@@ -42,9 +42,12 @@ INSTALLED_APPS = [
     'blood_bank.apps.BloodBankConfig',
     'rest_framework',
     'cpf_field',
+    'corsheaders',
+    'rest_framework.authtoken',
+    
 ]
-
-AUTH_USER_MODEL = 'blood_bank.User'
+from django.conf import settings
+settings.AUTH_USER_MODEL = 'blood_bank.MyUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -110,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'UTC'
 

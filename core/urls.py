@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from blood_bank import urls
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blood_bank/', include('blood_bank.urls'))
+    path('blood_bank/', include('blood_bank.urls')),
+    path('auth/', obtain_auth_token),
+
 ]

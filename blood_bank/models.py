@@ -1,36 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    PermissionsMixin,
-    BaseUserManager,
-)
-from cpf_field.models import CPFField
+from django.contrib.auth.models import User
 import uuid
 
-
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        """Creates and saves a new user"""
-        if not email:
-            raise ValueError('Users must have an email address')
-        user = self.model(email=self.normalize_email(email), **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-
-        return user
-
-    def create_superuser(self, email, password):
-        """Creates and saves a superuser"""
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-
-        return user
-
-
-class User(AbstractBaseUser, PermissionsMixin):
-    """Custom user model that supports using email instead of username"""
+class MyUser(User):
+    """Usuario baseado no modelo User com campos adicionais"""
 
     DONATOR = 'don'
     NURSE = 'nur'
@@ -38,15 +11,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USER_TYPES = [(DONATOR, 'donator'), (NURSE, 'nurse'), (ADMIN, 'admin')]
 
-    USERNAME_FIELD = 'email'
-
     name = models.CharField(max_length=250)
-    email = models.EmailField(max_length=250, unique=True)
-    cpf = CPFField(max_length=11)
+    cpf = models.CharField('CPF', max_length=14, unique=False, blank=True, null=True)
     user_type = models.CharField(max_length=3, choices=USER_TYPES, default=DONATOR)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
+    
 
 class Donator(models.Model):
     BLOOD_A_POSITIVE = 'a+'
@@ -68,15 +36,19 @@ class Donator(models.Model):
         (BLOOD_O_POSITIVE, 'O positive'),
         (BLOOD_O_NEGATIVE, 'O negative'),
     ]
-
+    user = models.ForeignKey(MyUser,
+							 on_delete=models.CASCADE)
     blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE)
     address = models.ForeignKey('Address', on_delete=models.CASCADE)
     telephone1 = models.CharField(max_length=11)
     telephone2 = models.CharField(max_length=11, null=True)
     birth_date = models.DateField()
+    is_active = models.BooleanField('Ativo', default=True)
 
 
 class Nurse(models.Model):
+    user = models.ForeignKey(MyUser,
+							 on_delete=models.CASCADE)
     address = models.ForeignKey('Address', on_delete=models.CASCADE)
     telephone1 = models.CharField(max_length=11)
     telephone2 = models.CharField(max_length=11, null=True)

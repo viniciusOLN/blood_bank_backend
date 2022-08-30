@@ -11,3 +11,4 @@ sqlparse==0.4.2
 tomli==2.0.1
 typing_extensions==4.1.1
 djangorestframework==3.13.1
+django-cors-headers==3.13.0

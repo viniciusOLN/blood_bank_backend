@@ -6,5 +6,5 @@ from django.conf.urls import include
 app_name = 'blood_bank'
 
 urlpatterns = [
-    path('login/', views.Login.as_view(), name='login'),
+    path('login/', views.login, name='login'),
 ]

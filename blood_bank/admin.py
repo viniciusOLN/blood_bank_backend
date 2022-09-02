@@ -19,11 +19,11 @@ class MyUserAdmin(UserAdmin):
     form = MyUserChangeForm
     add_form = MyUserCreationForm
     model = MyUser
-    ordering = ['name']
-    list_display   = ['username','name','cpf','email','user_type']
+    ordering = ['username']
+    list_display   = ['username','email','birth_date','user_type']
 
     fieldsets = UserAdmin.fieldsets + (
-            (None, {'fields': ('name','cpf', 'user_type')}),
+            (None, {'fields': ['user_type']}),
     )
 
 admin.site.register(MyUser, MyUserAdmin)

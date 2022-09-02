@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from datetime import date
+
+def age_of_user(value):
+    age = (date.today() - value).days / 365
+    
+    return age
 
 class MyUser(User):
     """Usuario baseado no modelo User com campos adicionais"""
@@ -8,11 +14,9 @@ class MyUser(User):
     DONATOR = 'don'
     NURSE = 'nur'
     ADMIN = 'adm'
-
     USER_TYPES = [(DONATOR, 'donator'), (NURSE, 'nurse'), (ADMIN, 'admin')]
-
-    name = models.CharField(max_length=250)
-    cpf = models.CharField('CPF', max_length=14, unique=False, blank=True, null=True)
+    
+    birth_date = models.DateField('Data de Nascimento')   
     user_type = models.CharField(max_length=3, choices=USER_TYPES, default=DONATOR)
     
 
@@ -38,17 +42,20 @@ class Donator(models.Model):
     ]
     user = models.ForeignKey(MyUser,
 							 on_delete=models.CASCADE)
-    blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE)
+    name = models.CharField(max_length=250)
+    cpf = models.CharField('CPF', max_length=14, unique=False, blank=True, null=True)
     address = models.ForeignKey('Address', on_delete=models.CASCADE)
     telephone1 = models.CharField(max_length=11)
     telephone2 = models.CharField(max_length=11, null=True)
-    birth_date = models.DateField()
+    blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE)
+    
     is_active = models.BooleanField('Ativo', default=True)
 
 
 class Nurse(models.Model):
     user = models.ForeignKey(MyUser,
 							 on_delete=models.CASCADE)
+    name = models.CharField(max_length=250)
     address = models.ForeignKey('Address', on_delete=models.CASCADE)
     telephone1 = models.CharField(max_length=11)
     telephone2 = models.CharField(max_length=11, null=True)

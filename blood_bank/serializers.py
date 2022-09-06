@@ -4,6 +4,9 @@ from rest_framework import serializers
 from blood_bank.models import MyUser
 import json
 from blood_bank.models import age_of_user
+from rest_framework.validators import UniqueValidator
+import re
+from django import forms
 
 class LoginFormSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,18 +31,31 @@ class LoginFormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Senha invalida."})
         return data
 
+
+
 class SignupFormSerializer(serializers.ModelSerializer):
-    confirm_password = serializers.CharField(write_only=True)
+    username = serializers.CharField(validators=[
+        UniqueValidator(
+            queryset=MyUser.objects.all(),
+            message="Já existe um usuário com este nome.",
+        )]
+        ,allow_blank=True
+    )
+    confirm_password = serializers.CharField(allow_null=True, allow_blank=True)
 
     class Meta:
         model = MyUser
         fields = ['username', 'email', 'birth_date', 'password', 'confirm_password'] 
+        extra_kwargs = {
+            "email": {"allow_blank": True},
+            "birth_date": {"allow_null": True},
+            "password": {"allow_null": True, 'allow_blank': True},
+        }
 
+    
     def validate_username(self, value):
         if  value == '' or  value == None:
             raise serializers.ValidationError({"username": "Por favor preencha este campo com um nome de usuário valido."})
-        elif MyUser.objects.filter(username=value).first():
-            raise serializers.ValidationError({"username": "Já existe um usuário com este email."})
 
         return value
        
@@ -51,6 +67,14 @@ class SignupFormSerializer(serializers.ModelSerializer):
 
         return value
     
+    def to_internal_value(self, data):
+        if data['birth_date'] == '':
+            data['birth_date'] = None
+        if not re.match(r'\d{4}\-\d{2}\-\d{2}', str(data['birth_date'])):
+            data['birth_date'] = None
+
+        return super(SignupFormSerializer, self).to_internal_value(data)
+
     def validate_birth_date(self, value):
         if  value == '' or  value == None:
             raise serializers.ValidationError({"birth_date": "Por favor preencha este campo com uma data de nascimento valida."})
@@ -60,17 +84,19 @@ class SignupFormSerializer(serializers.ModelSerializer):
         return value
     
     def validate(self, data):
-        if  data["password"] == '' or  data["password"] == None:
-            raise serializers.ValidationError({"password": "Por favor preencha este campo com uma senha valida."})
+        errors={}
+        if not data.get('password'):
+            errors['password'] = "Por favor preencha este campo com uma senha valida."
+        if not data.get('confirm_password'):
+            errors['confirm_password'] = "Por favor preencha este campo com a mesma senha anterior."
+        elif data.get('password') != data.get('confirm_password'):
+            errors['confirm_password'] = "Estas duas senhas não combinam."
         
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Estas duas senhas não combinam."})
-        
-        if data['confirm_password'] == '' or data['confirm_password'] == None:
-            raise serializers.ValidationError({"password": "Por favor preencha este campo com a senha que você escolheu."})
-            
+        if errors:
+            raise forms.ValidationError(errors)
+
         return data
-    
+        
     def create(self, validated_data):
         validated_data.pop('confirm_password', None)
         return super().create(validated_data)

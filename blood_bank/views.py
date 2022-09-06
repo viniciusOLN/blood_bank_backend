@@ -33,6 +33,8 @@ def login(request):
         else:
             return Response(serializer._errors)
 
+
+import re
 @api_view(['POST'])
 def signup(request):
     """

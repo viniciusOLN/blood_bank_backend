@@ -26,7 +26,7 @@ def login(request):
                 'token': token.key
                 }) 
         else:
-            return Response(serializer._errors)
+            return Response(serializer.errors)
 
 
 @api_view(['POST'])

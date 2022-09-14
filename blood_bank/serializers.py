@@ -16,18 +16,18 @@ class LoginFormSerializer(serializers.ModelSerializer):
         user = MyUser.objects.filter(email=value).first()
         
         if  value == '' or  value == None:
-            raise serializers.ValidationError({"email": "Por favor preencha este campo com um e-mail valido."})
+            raise serializers.ValidationError({"Por favor preencha este campo com um e-mail valido."})
         elif user == None:
-            raise serializers.ValidationError({"email": "Não existe usuário com este email."})
+            raise serializers.ValidationError({"Não existe usuário com este email."})
 
         return value
     
     def validate(self, data):
         user = MyUser.objects.filter(email=data['email']).first()
         if data['password'] == '' or data['password'] == None:
-            raise serializers.ValidationError({"password": "Por favor preencha este campo com uma senha valida."})
+            raise serializers.ValidationError({"Por favor preencha este campo com uma senha valida."})
         elif user == None or user.check_password(data['password']) == False:
-            raise serializers.ValidationError({"password": "Senha invalida."})
+            raise serializers.ValidationError({"Senha invalida."})
         return data
 
 

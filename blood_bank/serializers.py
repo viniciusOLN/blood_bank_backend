@@ -1,5 +1,4 @@
 from tokenize import blank_re
-from typing_extensions import Required
 from rest_framework import serializers
 from blood_bank.models import MyUser
 import json

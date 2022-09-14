@@ -16,21 +16,19 @@ class LoginFormSerializer(serializers.ModelSerializer):
         user = MyUser.objects.filter(email=value).first()
         
         if  value == '' or  value == None:
-            raise serializers.ValidationError("Por favor preencha este campo com um e-mail valido.")
+            raise serializers.ValidationError("Email ou senha invalidos.")
         elif user == None:
-            raise serializers.ValidationError("Não existe usuário com este email.")
+            raise serializers.ValidationError("Email ou senha invalidos.")
 
         return value
     
     def validate(self, data):
         user = MyUser.objects.filter(email=data['email']).first()
         if data['password'] == '' or data['password'] == None:
-            raise serializers.ValidationError("Por favor preencha este campo com uma senha valida.")
+            raise serializers.ValidationError("Email ou senha invalidos.")
         elif user == None or user.check_password(data['password']) == False:
-            raise serializers.ValidationError("Senha invalida.")
+            raise serializers.ValidationError("Email ou senha invalidos.")
         return data
-
-
 
 class SignupFormSerializer(serializers.ModelSerializer):
     username = serializers.CharField(validators=[

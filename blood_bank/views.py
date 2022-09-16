@@ -41,8 +41,9 @@ def signup(request):
         serializer = SignupFormSerializer(data=request.data)
 
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.save(commit=False)
             user.is_active = True
+            user.set_password(user.password)
             user.save()
 
             token, created = Token.objects.get_or_create(user=user)

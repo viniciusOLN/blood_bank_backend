@@ -8,4 +8,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('logout/', views.logout, name='logout'),
     
+    path('create-donor-perfil/', views.CreatePerfil.as_view(), 'create_donor_perfil' ),
+    path('edit-donor-perfil/<int:pk>', views.CreatePerfil.as_view(), 'edit_donor_perfil' ),
+    
 ]

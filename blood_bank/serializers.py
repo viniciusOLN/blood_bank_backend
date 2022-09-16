@@ -1,6 +1,6 @@
 from tokenize import blank_re
 from rest_framework import serializers
-from blood_bank.models import MyUser
+from blood_bank.models import Donator, MyUser
 import json
 from blood_bank.models import age_of_user
 from rest_framework.validators import UniqueValidator
@@ -52,15 +52,15 @@ class SignupFormSerializer(serializers.ModelSerializer):
     
     def validate_username(self, value):
         if  value == '' or  value == None:
-            raise serializers.ValidationError({"username": "Por favor preencha este campo com um nome de usuário valido."})
+            raise serializers.ValidationError("Por favor preencha este campo com um nome de usuário valido.")
 
         return value
        
     def validate_email(self, value):
         if  value == '' or  value == None:
-            raise serializers.ValidationError({"email": "Por favor preencha este campo com um e-mail valido."})
+            raise serializers.ValidationError("Por favor preencha este campo com um e-mail valido.")
         elif MyUser.objects.filter(email=value).first():
-            raise serializers.ValidationError({"email": "Já existe usuário com este email."})
+            raise serializers.ValidationError("Já existe usuário com este email.")
 
         return value
     
@@ -74,9 +74,9 @@ class SignupFormSerializer(serializers.ModelSerializer):
 
     def validate_birth_date(self, value):
         if  value == '' or  value == None:
-            raise serializers.ValidationError({"birth_date": "Por favor preencha este campo com uma data de nascimento valida."})
+            raise serializers.ValidationError("Por favor preencha este campo com uma data de nascimento valida.")
         elif age_of_user(value) < 16 :
-            raise serializers.ValidationError({"birth_date": "Menores de 16 anos não podem doar sangue."})
+            raise serializers.ValidationError("Menores de 16 anos não podem doar sangue.")
 
         return value
     
@@ -99,3 +99,12 @@ class SignupFormSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     
+class CreateEditDonatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Donator
+        fields = ['username', 'email', 'birth_date', 'password', 'confirm_password'] 
+        extra_kwargs = {
+            "email": {"allow_blank": True},
+            "birth_date": {"allow_null": True},
+            "password": {"allow_null": True, 'allow_blank': True},
+        }

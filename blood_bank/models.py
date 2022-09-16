@@ -48,9 +48,6 @@ class Donator(models.Model):
     telephone1 = models.CharField(max_length=11)
     telephone2 = models.CharField(max_length=11, null=True)
     blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE)
-    
-    is_active = models.BooleanField('Ativo', default=True)
-
 
 class Nurse(models.Model):
     user = models.ForeignKey(MyUser,

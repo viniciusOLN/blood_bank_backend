@@ -45,7 +45,7 @@ def signup(request):
             user.is_active = True
             user.save()
 
-            token, created = Token.objects.get_or_create(user=user).key
+            token, created = Token.objects.get_or_create(user=user)
             return Response({
                 'message': 'Usuário registrado com sucesso.',
                 'token': token.key, 
